@@ -13,6 +13,16 @@ const routes = [
     name: 'Admin',
     component: Admin,
   },
+  {
+    path: '/admin/letters',
+    name: 'AdminLetters',
+    component: Admin,
+  },
+  {
+    path: '/admin/files',
+    name: 'AdminFiles',
+    component: Admin,
+  },
 ];
 
 const router = createRouter({

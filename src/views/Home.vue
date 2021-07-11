@@ -24,7 +24,7 @@ export default {
     }
   },
   mounted() {
-    this.isEnterEmail = Boolean(localStorage.getItem('isEnterEmail'));
+    this.isEnterEmail = Boolean(localStorage.getItem('email'));
   }
 };
 </script>
