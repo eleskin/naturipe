@@ -1,7 +1,7 @@
 <template>
   <div>
     <Unauthorize v-if="!isEnterEmail" :onenter-email="onenterEmail"></Unauthorize>
-    <Authorize v-if="isEnterEmail"></Authorize>
+    <Authorize v-if="isEnterEmail" :onenter-email="onenterEmail"></Authorize>
   </div>
 </template>
 

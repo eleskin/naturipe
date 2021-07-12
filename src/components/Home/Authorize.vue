@@ -1,6 +1,6 @@
 <template>
-  <div class="authorize">
-    <img :src="logo" class="w-32 h-32 mt-2 ml-auto mr-auto" alt="">
+  <div class="authorize relative">
+    <img :src="logo" class="w-32 h-32 mt-16 ml-auto mr-auto" alt="">
     <div class="grid w-full grid-cols-1 p-2">
       <div class="shadow rounded bg-white p-4 flex flex-col w-10/12 w-4/5 mr-auto ml-auto">
         <div
@@ -10,12 +10,19 @@
           <span class="text-lg font-medium">{{ file.title }}</span>
           <button
               class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white outline-none"
-              @click="onDownload"
+              @click="() => onDownload(file.title, file.link)"
           >
             Download
           </button>
         </div>
       </div>
+    </div>
+    <div
+        :class="`bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 absolute w-full ${modalIsActive ? 'modal_active' : 'modal'}`"
+        role="alert"
+    >
+      <p class="font-bold">Informational message</p>
+      <p class="text-sm">Information has been sent to your email address.</p>
     </div>
   </div>
 </template>
@@ -23,14 +30,16 @@
 <script>
 import logo from '../../assets/img/logo.svg';
 import db from '../../firebase';
-import admin from 'firebase';
+import axios from 'axios';
 
 export default {
   name: 'Authorize',
   data: () => ({
     logo: logo,
-    files: []
+    files: [],
+    modalIsActive: false
   }),
+  props: ['onenterEmail'],
   mounted() {
     db.collection('files').get().then(querySnapshot => {
       querySnapshot.forEach((doc) => {
@@ -39,19 +48,20 @@ export default {
     });
   },
   methods: {
-    onDownload() {
-      admin
-          .firestore()
-          .collection('mail')
-          .add({
-            to: 'eleskin732@mail.ru',
-            message: {
-              subject: 'Hello from Firebase!',
-              text: 'This is the plaintext section of the email body.',
-              html: 'This is the <code>HTML</code> section of the email body.',
-            },
-          })
-          .then(() => console.log('Queued email for delivery!'));
+    onDownload(title, link) {
+      if (localStorage.getItem('email')) {
+        axios
+            .get(`https://us-central1-my-project-1558775535295.cloudfunctions.net/sendMessage?email=${localStorage.getItem('email')}&file=${title}&link=${link}`)
+            .then(() => {
+              this.modalIsActive = true;
+              setTimeout(() => {
+                this.modalIsActive = false;
+              }, 5000);
+            });
+      } else {
+        localStorage.removeItem('email');
+        this.onenterEmail(false);
+      }
     }
   }
 };
@@ -61,5 +71,13 @@ export default {
 .authorize {
   display: grid;
   grid-template-rows: auto 1fr;
+}
+.modal {
+  top: -100%;
+  transition: 0.3s ease-in-out;
+}
+.modal_active {
+  top: 0;
+  transition: 0.3s ease-in-out;
 }
 </style>

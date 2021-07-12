@@ -3,7 +3,9 @@
     <div class="text-right mb-4">
       <button
           class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white outline-none mr-2"
-      >Export to CSV</button>
+          @click="export"
+      >Export to CSV
+      </button>
     </div>
     <div
         v-for="(letter, index) in letters"
@@ -32,6 +34,47 @@ export default {
         this.letters.push(doc.data());
       });
     });
+  },
+  methods: {
+    export() {
+      function flattenObject(ob) {
+        const toReturn = {};
+
+        for (let i in ob) {
+          if (!ob.hasOwnProperty(i)) continue;
+
+          if ((typeof ob[i]) == 'object' && ob[i] !== null) {
+            const flatObject = flattenObject(ob[i]);
+            for (let x in flatObject) {
+              if (!flatObject.hasOwnProperty(x)) continue;
+
+              toReturn[x] = flatObject[x];
+              toReturn[i] = flatObject[x];
+            }
+          } else {
+            toReturn[i] = ob[i];
+          }
+        }
+        return toReturn;
+      }
+
+      const items = [flattenObject(this.letters)];
+
+      const replacer = (key, value) => value === null ? '' : value;
+      const header = Object.keys(items[0]);
+      const csv = [
+        header.join(','),
+        ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      ].join('\r\n');
+
+      const downloadLink = document.createElement('a');
+      const blob = new Blob(['\ufeff', csv]);
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = 'letters.csv';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
   }
 };
 </script>
