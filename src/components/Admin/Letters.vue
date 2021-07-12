@@ -15,7 +15,6 @@
       <span class="text-md mb-1">to: {{ letter.to }}</span>
       <span class="text-md mb-1">html: {{ letter.message.html }}</span>
       <span class="text-md mb-1">subject: {{ letter.message.subject }}</span>
-      <span class="text-md mb-1">text: {{ letter.message.text }}</span>
     </div>
   </div>
 </template>
@@ -58,7 +57,7 @@ export default {
         return toReturn;
       }
 
-      const items = [flattenObject(this.letters)];
+      const items = this.letters.map((item) => flattenObject(item));
 
       const replacer = (key, value) => value === null ? '' : value;
       const header = Object.keys(items[0]);

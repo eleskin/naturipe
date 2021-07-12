@@ -17,7 +17,7 @@ exports.sendMessage = functions.https.onRequest( (request, response) => {
     to: request.query.email,
     message: {
       subject: 'Naturipe',
-      html: `Thanks for your interest in our products. Your "${request.query.file}" can be viewed here: ${request.query.link}`,
+      html: `Thanks for your interest in our products. Your "${request.query.file}" can be viewed here: <a href="${request.query.link}">${request.query.link}</a>`,
     },
   }).then(result => {
     response.send(result);
