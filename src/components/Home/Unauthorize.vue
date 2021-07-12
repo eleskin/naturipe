@@ -4,7 +4,7 @@
     <div class="grid h-full w-full grid-cols-1 justify-center items-center p-2">
       <form
           class="shadow rounded bg-white p-4 pt-8 pb-8 flex flex-col justify-center items-center w-10/12 sm:w-1/2 md:w-1/2 lg:w-1/3 max-w-lg mr-auto ml-auto"
-          @click="(event) => onSubmit(event)"
+          @submit="(event) => onSubmit(event)"
       >
         <h2 class="text-xl font-semibold text-center">Download our latest catalog</h2>
         <input
@@ -13,7 +13,9 @@
             placeholder="Enter your email"
             required
             v-model="email"
+            @input="errorEmail = null"
         >
+        <span v-if="errorEmail" class="mr-auto text-red-400 mt-0.5 mb-1 text-sm">{{ errorEmail }}</span>
         <button
             type="submit"
             class="rounded mt-2 bg-blue-500 hover:bg-blue-600 w-full p-2 text-white outline-none"
@@ -36,25 +38,28 @@ export default {
   data: () => ({
     logo: logo,
     email: '',
+    errorEmail: null,
   }),
   methods: {
-    onSubmit(event) {
+    async onSubmit(event) {
       event.preventDefault();
+
+      this.errorEmail = null;
 
       const emailRE = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
       if (emailRE.test(this.email)) {
         let isExist = false;
-        db.collection('emails').get().then(querySnapshot => {
+        await db.collection('emails').get().then(querySnapshot => {
           querySnapshot.forEach((doc) => {
             if (this.email.toLowerCase() === doc.data().value.toLowerCase()) isExist = true;
           });
         });
-        if (isExist) db.collection('emails').add({value: this.email});
+        if (!isExist) await db.collection('emails').add({value: this.email});
         this.onenterEmail(true);
         localStorage.setItem('email', this.email);
       } else {
-        console.log('Invalid email!');
+        this.errorEmail = 'Invalid email!';
       }
     },
   },
