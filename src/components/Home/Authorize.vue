@@ -8,12 +8,14 @@
             class="p-2 rounded border border-gray-200 bg-gray-50 flex justify-between items-center mb-1.5 mt-1.5 hover:shadow"
         >
           <span class="text-lg font-medium">{{ file.title }}</span>
-          <button
-              class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white outline-none"
+          <a
+              class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white outline-none cursor-pointer"
               @click="() => onDownload(file.title, file.link)"
+              :href="file.link"
+              target="_blank"
           >
             Download
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -50,6 +52,7 @@ export default {
   methods: {
     onDownload(title, link) {
       if (localStorage.getItem('email')) {
+
         axios
             .get(`https://us-central1-my-project-1558775535295.cloudfunctions.net/sendMessage?email=${localStorage.getItem('email')}&file=${title}&link=${link}`)
             .then(() => {

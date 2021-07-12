@@ -8,13 +8,12 @@
       </button>
     </div>
     <div
-        v-for="(letter, index) in letters"
+        v-for="(email, index) in emails"
         class="p-2 rounded border hover:shadow border-gray-200 bg-gray-50 flex flex-col items-start mb-1.5 mt-1.5"
         :key="index"
     >
-      <span class="text-md mb-1">to: {{ letter.to }}</span>
-      <span class="text-md mb-1">html: {{ letter.message.html }}</span>
-      <span class="text-md mb-1">subject: {{ letter.message.subject }}</span>
+      <span class="text-md mb-1">Email: {{ email.value }}</span>
+      <span class="text-md mb-1">Date: {{ email.date }}</span>
     </div>
   </div>
 </template>
@@ -25,12 +24,12 @@ import db from '../../firebase';
 export default {
   name: 'Letters',
   data: () => ({
-    letters: []
+    emails: []
   }),
   mounted() {
-    db.collection('mail').get().then(querySnapshot => {
+    db.collection('emails').get().then(querySnapshot => {
       querySnapshot.forEach((doc) => {
-        this.letters.push(doc.data());
+        this.emails.push(doc.data());
       });
     });
   },
@@ -57,7 +56,7 @@ export default {
         return toReturn;
       }
 
-      const items = this.letters.map((item) => flattenObject(item));
+      const items = this.emails.map((item) => flattenObject(item));
 
       const replacer = (key, value) => value === null ? '' : value;
       const header = Object.keys(items[0]);
@@ -69,7 +68,7 @@ export default {
       const downloadLink = document.createElement('a');
       const blob = new Blob(['\ufeff', csv]);
       downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = 'letters.csv';
+      downloadLink.download = 'emails.csv';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);

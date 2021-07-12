@@ -55,7 +55,16 @@ export default {
             if (this.email.toLowerCase() === doc.data().value.toLowerCase()) isExist = true;
           });
         });
-        if (!isExist) await db.collection('emails').add({value: this.email});
+        if (!isExist) {
+          const today = new Date();
+          const dd = String(today.getDate()).padStart(2, '0');
+          const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+          const yyyy = today.getFullYear();
+
+          const date = mm + '/' + dd + '/' + yyyy;
+
+          await db.collection('emails').add({value: this.email, date: date});
+        }
         this.onenterEmail(true);
         localStorage.setItem('email', this.email);
       } else {

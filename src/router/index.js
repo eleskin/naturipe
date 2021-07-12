@@ -14,8 +14,8 @@ const routes = [
     component: Admin,
   },
   {
-    path: '/admin/letters',
-    name: 'AdminLetters',
+    path: '/admin/emails',
+    name: 'AdminEmails',
     component: Admin,
   },
   {

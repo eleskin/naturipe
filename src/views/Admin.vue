@@ -17,7 +17,7 @@ export default {
   }),
   methods: {
     onAuthorization(state = false) {
-      if (state) router.push('/admin/letters');
+      if (state) router.push('/admin/emails');
       this.isLogin = state;
     }
   },
